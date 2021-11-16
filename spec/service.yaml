@@ -1,0 +1,72 @@
+# Helloworld-go app deployment
+#apiVersion: apps/v1
+#kind: Deployment
+#metadata:
+#  name: avro-flight-decisioner
+#  labels:
+#    app: avro-flight-decisioner
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: avro-flight-decisioner
+#  template:
+#    metadata:
+#      labels:
+#        app: avro-flight-decisioner
+#    spec:
+#      containers:
+#        - name: iomanager
+#          image: erk-avro:0.0.1
+---
+# Service that exposes helloworld-go app.
+# This will be the subscriber for the Trigger
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: avro-flight-decisioner-mirror
+spec:
+  template:
+    spec:
+      containers:
+        - image: dev.local/erk-avro:0.0.4
+---
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: avro-flight-decisioner
+spec:
+  template:
+    spec:
+      containers:
+        - image: dev.local/erk-avro:0.0.4
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: avro-flight-decisioner
+spec:
+  broker: example-broker
+  filter:
+    attributes:
+      type: urm_6.19.feature
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: avro-flight-decisioner
+---
+apiVersion: eventing.knative.dev/v1
+kind: Trigger
+metadata:
+  name: avro-flight-decisioner-mirror
+spec:
+  broker: example-broker
+  filter:
+    attributes:
+      type: urm_6.19.feature
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1
+      kind: Service
+      name: avro-flight-decisioner-mirror
