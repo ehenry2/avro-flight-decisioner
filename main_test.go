@@ -29,18 +29,19 @@ func Test_handleMessage(t *testing.T) {
 		LoadCodec(gomock.Eq(eventType)).
 		Return(codec, nil)
 
+
 	// create the cloud event
-	event := cloudevents.NewEvent()
-	event.SetID("abc123")
-	event.SetSource("upstream")
-	event.SetType(eventType)
-	_ = event.SetData("application/octet-stream", data)
+	e := cloudevents.NewEvent()
+	e.SetID("abc123")
+	e.SetSource("upstream")
+	e.SetType(eventType)
+	_ = e.SetData("application/octet-stream", data)
 
 	// create the context
 	ctx := context.WithValue(context.Background(), codecLoaderKey, m)
 
 	// run the test
-	HandleMessage(ctx, event)
+	HandleMessage(ctx, e)
 	t.Fail()
 
 }

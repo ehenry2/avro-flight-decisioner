@@ -16,3 +16,4 @@
 *.avro
 .idea/
 contrib/
+spec/

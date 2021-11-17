@@ -1,6 +1,5 @@
 package arrowconv
 
-
 import (
 	"errors"
 	"fmt"
@@ -75,7 +74,8 @@ func (c *ArrowConverter) getSchema(data map[string]interface{}) (*arrow.Schema, 
 			return nil, errors.New("no valid conversion for type")
 		}
 	}
-	return arrow.NewSchema(fields, nil), nil
+	meta := arrow.NewMetadata([]string{}, []string{})
+	return arrow.NewSchema(fields, &meta), nil
 }
 
 func (c *ArrowConverter) getRecord(data map[string]interface{}, builder *array.RecordBuilder) (array.Record, error) {
@@ -121,6 +121,57 @@ func (c *ArrowConverter) MapToArrow(data map[string]interface{}) (array.Record, 
 
 func (c *ArrowConverter) ArrowToMap(record array.Record) (map[string]interface{}, error) {
 	defer record.Release()
-	//TODO actually inmplement this!
-	return make(map[string]interface{}), nil
+	result := make(map[string]interface{})
+	s := record.Schema()
+	for i, column := range record.Columns() {
+		field := s.Field(i)
+		switch field.Type.ID() {
+		case arrow.BOOL:
+			col, ok := column.(*array.Boolean)
+			if !ok {
+				return result, errors.New("could not convert column to *array.Boolean")
+			}
+			result[field.Name] = col.Value(0)
+		case arrow.BINARY:
+			col, ok := column.(*array.Binary)
+			if !ok {
+				return result, errors.New("could not convert column to *array.Binary")
+			}
+			result[field.Name] = col.Value(0)
+		case arrow.FLOAT32:
+			col, ok := column.(*array.Float32)
+			if !ok {
+				return result, errors.New("could not convert column to *array.Float32")
+			}
+			result[field.Name] = col.Value(0)
+		case arrow.FLOAT64:
+			col, ok := column.(*array.Float64)
+			if !ok {
+				return result, errors.New("could not convert column to *array.Float64")
+			}
+			result[field.Name] = col.Value(0)
+		case arrow.INT32:
+			col, ok := column.(*array.Int32)
+			if !ok {
+				return result, errors.New("could not convert column to *array.Int32")
+			}
+			result[field.Name] = col.Value(0)
+		case arrow.INT64:
+			col, ok := column.(*array.Int64)
+			if !ok {
+				return result, errors.New("could not convert column to *array.Int64")
+			}
+			result[field.Name] = col.Value(0)
+		case arrow.STRING:
+			col, ok := column.(*array.String)
+			if !ok {
+				return result, errors.New("could not convert column to *array.String")
+			}
+			result[field.Name] = col.Value(0)
+		default:
+			fmt.Println("got a type we can't handle")
+			return nil, errors.New("got a type we can't handle")
+		}
+	}
+	return result, nil
 }
