@@ -17,3 +17,5 @@
 .idea/
 contrib/
 spec/
+
+*.json

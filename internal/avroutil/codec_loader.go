@@ -19,7 +19,7 @@ type AvroCodecLoader interface {
 }
 
 type S3AvroCodecLoader struct {
-	cache *ttlcache.Cache
+	cache ttlcache.SimpleCache
 	storageClient S3Client
 	bucketName string
 	objectPrefix string
@@ -77,7 +77,7 @@ func (l *S3AvroCodecLoader) LoadCodec(cloudEventName string) (*goavro.Codec, err
 	return goavro.NewCodec(s)
 }
 
-func NewS3AvroCodecLoader(cache *ttlcache.Cache, storageClient S3Client,
+func NewS3AvroCodecLoader(cache ttlcache.SimpleCache, storageClient S3Client,
 	bucketName, objectPrefix string) *S3AvroCodecLoader {
 	return &S3AvroCodecLoader{cache, storageClient, bucketName, objectPrefix}
 }
