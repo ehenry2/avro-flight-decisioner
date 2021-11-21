@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
+	"github.com/ehenry2/avro-flight-decisioner/internal/arrowconv"
 	"github.com/ehenry2/avro-flight-decisioner/internal/avroutil"
 	"github.com/ehenry2/avro-flight-decisioner/internal/scoring"
-	"github.com/ehenry2/avro-flight-decisioner/internal/scoring/arrowconv"
 	"google.golang.org/grpc"
 	"log"
 	"time"
@@ -98,7 +98,7 @@ func getScorer() *scoring.FlightModelScorer {
 		log.Fatalf("failed to instantiate flight client: %s", err)
 	}
 	conv := arrowconv.NewArrowConverter(memory.NewGoAllocator())
-	return scoring.NewFlightModelScorer("127.0.0.1:9999", flightClient, conv)
+	return scoring.NewFlightModelScorer(flightClient, conv)
 }
 
 func main() {

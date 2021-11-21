@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/apache/arrow/go/v7/arrow/flight"
 	"github.com/apache/arrow/go/v7/arrow/ipc"
-	"github.com/ehenry2/avro-flight-decisioner/internal/scoring/arrowconv"
+	"github.com/ehenry2/avro-flight-decisioner/internal/arrowconv"
 )
 
 
@@ -17,13 +17,12 @@ type ArrowFlightClient interface {
 }
 
 type FlightModelScorer struct {
-	uri string
 	client ArrowFlightClient
 	conv *arrowconv.ArrowConverter
 }
 
-func NewFlightModelScorer(uri string, client ArrowFlightClient, conv *arrowconv.ArrowConverter) *FlightModelScorer {
-	return &FlightModelScorer{uri, client, conv}
+func NewFlightModelScorer(client ArrowFlightClient, conv *arrowconv.ArrowConverter) *FlightModelScorer {
+	return &FlightModelScorer{client, conv}
 }
 
 func (s *FlightModelScorer) ScoreModel(features map[string]interface{}) (map[string]interface{}, error) {
