@@ -30,7 +30,7 @@ func (c *ArrowConverter) getSchema(data map[string]interface{}) (*arrow.Schema, 
 		case []byte:
 			field := arrow.Field{
 				Name: k,
-				Type: &arrow.BooleanType{},
+				Type: &arrow.BinaryType{},
 				Nullable: false,
 			}
 			fields = append(fields, field)
@@ -70,7 +70,6 @@ func (c *ArrowConverter) getSchema(data map[string]interface{}) (*arrow.Schema, 
 			}
 			fields = append(fields, field)
 		default:
-			fmt.Println("got a type we can't handle")
 			return nil, errors.New("no valid conversion for type")
 		}
 	}
@@ -169,8 +168,7 @@ func (c *ArrowConverter) ArrowToMap(record array.Record) (map[string]interface{}
 			}
 			result[field.Name] = col.Value(0)
 		default:
-			fmt.Println("got a type we can't handle")
-			return nil, errors.New("got a type we can't handle")
+			return nil, errors.New("no conversion from arrow type to avro")
 		}
 	}
 	return result, nil
